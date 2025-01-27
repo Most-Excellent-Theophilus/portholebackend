@@ -1,0 +1,9 @@
+RewriteEngine On
+#RewriteBase /
+
+# Exclude real files and directories from rewriting
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+
+# Rewrite URLs to the entry point (e.g., index.php)
+RewriteRule ^(.*)$ index.php?request=$1 [QSA,L]
