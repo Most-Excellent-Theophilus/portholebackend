@@ -73,7 +73,7 @@ class User
             $model = new UserModel();
 
             $result = $model->create($data);
-            $responseData = isset($result['data']) && $result['data'] ? $result['data'] : $model->getAll();
+            $responseData = isset($result['data']) && $result['data'] ? $result['data'] : $model->find(['username'=>$data['username']]);
             return databaseStatusHandler($result, 'Created Account Successfully', 'Unable to Create Account', 'Unable to Create Account were are working on it', $responseData);
 
         } catch (\Throwable $th) {

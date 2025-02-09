@@ -13,6 +13,7 @@ if (!empty($_GET)) {
 
     switch ($method) {
         case 'GET':
+            
             if ($paramslist == 3) {
                 $function = $request[1];
                 $id = $request[2];
