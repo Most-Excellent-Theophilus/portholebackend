@@ -7,7 +7,7 @@ abstract class Database
 
     public function __construct()
     {
-        $pdo = new PDO('sqlite:' . __DIR__ . '/database/database.db');
+        $pdo = new PDO('sqlite:' . __DIR__ . '/sqlite/database.db');
         $this->pdo = $pdo;
         $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
     }
