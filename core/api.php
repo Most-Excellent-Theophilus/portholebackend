@@ -24,6 +24,7 @@ if (!empty($_GET)) {
             if ($paramslist == 2) {
                 $function = $request[1];
                 $data = $_POST;
+
             } else {
                 feedback('fail', 'POST parameters not enough', []);
                 $fail = true;
@@ -59,17 +60,9 @@ if (!empty($_GET)) {
     }
     if (!$fail) {
         call_user_func_array([$class, $function], [$data, $id]);
-
-        // feedback('success', 'success indeed', [
-        //     'request' => $request,
-        //     'params' => $paramslist,
-        //     'class' => $class,
-        //     'function' => $function,
-        //     'data' => $data,
-        //     'id' => $id
-        // ]);
     }
 
 } else {
     feedback('fail', 'parameters not enough', []);
 }
+exit;

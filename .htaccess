@@ -1,6 +1,9 @@
 RewriteEngine On
 #RewriteBase /
 
+# Exclude the Public folder from rewriting
+RewriteCond %{REQUEST_URI} !^/public/ [NC]
+
 # Exclude real files and directories from rewriting
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_FILENAME} !-d

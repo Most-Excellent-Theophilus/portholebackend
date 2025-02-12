@@ -49,17 +49,73 @@ class Detections
 
 
     public static function store($data)
-
-    
     {
+
+
         $responseData = [];
+        $directory = 'public/';
+        $path = uniqid('files_') . '_' . time() . '/';
+        $imageDir = 'images/';
+        $filesDir = 'files/';
+        $errors = false;
+
         try {
-           // # code...
-            $model = new DetectionsModel();
+            // # code...
+            if (isset($_FILES['files'])) {
+                $files = $_FILES['files'];
+                $newDIr = $directory . '/' . $path;
+
+                if (!file_exists($newDIr)) {
+                    mkdir($newDIr, 0777, true);
+
+                }
+
+                foreach ($_FILES['files']['full_path'] as $key => $value) {
+                    try {
+                        $imagePath = $newDIr . $imageDir;
+                        if (!file_exists($imagePath)) {
+                            mkdir($imagePath, 0777, true);
+
+                        }
+                        // echo $imagePath;
+                        move_uploaded_file($_FILES['files']['tmp_name'][$key], $imagePath . $key . '.jpeg');
+
+                        $filePath = $newDIr . $filesDir;
+
+                        if (!file_exists($filePath)) {
+                            mkdir($filePath, 0777, true);
+
+                        }
+                        $decodedString = urldecode($_FILES['files']['full_path'][$key]);
+                        // $jsonData = json_encode();
+                        // echo $filePath;
+                        file_put_contents($filePath . $key . '.json', $decodedString );
+                        //code...
+                    } catch (\Throwable $th) {
+                        $errors = true;
+                    }
+
+                }
+                if (!$errors) {
+                    $model = new DetectionsModel();
+                    $data = [...$data, 'path' => $path];
+                    
+                    $result = $model->create($data);
+                    $responseData = isset($result['data']) && $result['data'] ? $result['data'] : $model->getAll();
+
+                    return databaseStatusHandler($result, 'Detections Stored', 'Unable save Detections list', 'Unable to save Detections list, were are working on it', $responseData);
+                }
+                return feedback('fail', 'Something Went Wrong While saving the files ', [$th]);
+
+            }
+
 
         } catch (\Throwable $th) {
-            //throw $th;
+            return feedback('error', 'We are Having issues with connecting to the database', [$th]);
+
         }
+
+
     }
     public static function update($data)
     {
