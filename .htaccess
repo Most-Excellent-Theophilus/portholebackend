@@ -10,3 +10,14 @@ RewriteCond %{REQUEST_FILENAME} !-d
 
 # Rewrite URLs to the entry point (e.g., index.php)
 RewriteRule ^(.*)$ index.php?request=$1 [QSA,L]
+
+# Allow CORS (Cross-Origin Resource Sharing)
+<IfModule mod_headers.c>
+    Header set Access-Control-Allow-Origin "*"
+    Header set Access-Control-Allow-Methods "GET, POST, OPTIONS"
+    Header set Access-Control-Allow-Headers "Content-Type, Authorization"
+</IfModule>
+
+# Handle CORS preflight requests (for OPTIONS method)
+RewriteCond %{REQUEST_METHOD} OPTIONS
+RewriteRule ^(.*)$ $1 [R=200,L]

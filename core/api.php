@@ -13,11 +13,24 @@ if (!empty($_GET)) {
 
     switch ($method) {
         case 'GET':
-            
+
             if ($paramslist == 3) {
                 $function = $request[1];
                 $id = $request[2];
-
+                
+                if ($function == 'getphoto') {
+                    $data = $request[2];
+                } else {
+                    $data = $_GET;
+                }
+            } elseif ($paramslist == 2) {
+                $function = $request[1];
+                $data = $_GET;
+            } elseif ($paramslist == 1) {
+                $function = 'index';
+            } else {
+                feedback('fail', 'parameters not enough', []);
+                $fail = true;
             }
             break;
         case 'POST':

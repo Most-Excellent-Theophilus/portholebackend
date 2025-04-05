@@ -4,6 +4,7 @@ class Detections
 {
 
 
+
     public static function index($data)
     {
 
@@ -16,7 +17,7 @@ class Detections
             $result = $model->getAll();
             $responseData = isset($result['data']) && $result['data'] ? $result['data'] : $model->getAll();
 
-            return databaseStatusHandler($result, 'List of All Users', 'Unable to get Detections list', 'Unable to to Detections list, were are working on it', $responseData);
+            return databaseStatusHandler($result, 'List of All Detections', 'Unable to get Detections list', 'Unable to to Detections list, were are working on it', $responseData);
 
         } catch (\Throwable $th) {
             feedback('error', 'We are Having issues with connecting to the database', [$th]);
@@ -24,7 +25,56 @@ class Detections
 
     }
 
+    public static function getphoto($data)
+    {
+        $directory = 'public/';
+        $imageDir = 'images/';
+        $filesDir = 'files/';
+        $photoInfo = explode('-', $data);
+        // show();
+        $responseData = [];
 
+
+        // try {
+        $model = new DetectionsModel();
+        $result = $model->find(['id' => $photoInfo[0]]);
+       
+        if (!isset($result['data']) && !$result['data']) {
+            return databaseStatusHandler($result, 'List of All Detections', 'Unable to get Detections list', 'Unable to to Detections list, were are working on it', $responseData);
+        }
+
+
+        $jsonfile = $directory . $result['data']['path'] . $filesDir . $photoInfo[1] . '.json';
+
+        if (!file_exists($jsonfile))
+            return feedback('fail', 'pot hole data not found', $responseData);
+
+
+        $jsonData = file_get_contents($jsonfile);
+        // echo $jsonData;
+        if (!$jsonData)
+            return feedback('fail', 'unable to get data pot hole data', $responseData);
+
+
+        $jsonData = json_decode($jsonData, true);
+        $result['data']['json'] = $jsonData;
+
+        return feedback('success', 'Pot hole data retrived', $jsonData);
+
+
+        // } catch (\Throwable $th) {
+        //     feedback('error', 'We are Having issues with connecting to the database', [$th]);
+        // }
+
+
+
+
+        // show($result);x  
+
+
+
+
+    }
     public static function search($data)
     {
 
@@ -50,19 +100,22 @@ class Detections
 
     public static function store($data)
     {
-
-
-        $responseData = [];
         $directory = 'public/';
-        $path = uniqid('files_') . '_' . time() . '/';
         $imageDir = 'images/';
         $filesDir = 'files/';
+
+        $responseData = [];
+
+        $path = uniqid('files_') . '_' . time() . '/';
+
         $errors = false;
 
         try {
             // # code...
             if (isset($_FILES['files'])) {
-                $files = $_FILES['files'];
+
+                if (count($_FILES['files']['name']) > ini_get('max_file_uploads'))
+                    return feedback('fail', 'you exceeded maximum number of uploads', []);
                 $newDIr = $directory . '/' . $path;
 
                 if (!file_exists($newDIr)) {
@@ -89,7 +142,7 @@ class Detections
                         $decodedString = urldecode($_FILES['files']['full_path'][$key]);
                         // $jsonData = json_encode();
                         // echo $filePath;
-                        file_put_contents($filePath . $key . '.json', $decodedString );
+                        file_put_contents($filePath . $key . '.json', $decodedString);
                         //code...
                     } catch (\Throwable $th) {
                         $errors = true;
@@ -98,8 +151,9 @@ class Detections
                 }
                 if (!$errors) {
                     $model = new DetectionsModel();
-                    $data = [...$data, 'path' => $path];
-                    
+                    $address = (string) count($_FILES['files']['full_path']);
+                    $data = [...$data, 'path' => $path, 'address' => $address];
+
                     $result = $model->create($data);
                     $responseData = isset($result['data']) && $result['data'] ? $result['data'] : $model->getAll();
 
